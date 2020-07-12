@@ -7,7 +7,7 @@ This is the repository of the API of the **Mangia Club App**
 
 ### Prerequisites
 
-* [Node 8.11.3](https://nodejs.org/en/blog/release/v8.11.3/)
+* [Node 12.16.1](https://nodejs.org/en/blog/release/v12.16.1/)
 * [Git](https://git-scm.com/)
 
 ## Documentation
