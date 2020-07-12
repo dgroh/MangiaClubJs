@@ -1,13 +1,14 @@
-var express = require('express');
+const express = require('express');
 
-var app = express();
+const app = express();
 
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-    res.send('Welcome to Mangia Club in Node WIP!');
+  res.send('Welcome to Mangia Club in Node WIP!');
 });
 
 app.listen(port, () => {
-    console.log(`Running on port ${port}`);
+  // eslint-disable-next-line
+  console.log(`Running on port ${port}`);
 });
