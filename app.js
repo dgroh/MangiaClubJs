@@ -2,12 +2,14 @@ const express = require('express');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const User = require('./models/userModel');
+const userRouter = require('./routes/userRouter')(User);
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Mangia Club in Node WIP!');
-});
+app.use('/v1/api', userRouter);
 
-app.listen(port, () => {
+app.server = app.listen(port, () => {
   // eslint-disable-next-line
   console.log(`Running on port ${port}`);
 });
+
+module.exports = app;
