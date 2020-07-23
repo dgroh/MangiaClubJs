@@ -6,8 +6,12 @@ const routes = (User) => {
 
   const controller = usersController(User);
 
-  userRouter.route('/users').get(controller.getAll);
-  userRouter.route('/users/:id').get(controller.getOne);
+  userRouter.route('/users')
+    .get(controller.getAll)
+    .post(controller.create);
+
+  userRouter.route('/users/:id')
+    .get(controller.getOne);
 
   return userRouter;
 };

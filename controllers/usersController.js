@@ -24,12 +24,43 @@ const usersController = (User) => {
 
       res.status(200);
       res.json(users);
-      
+
       return;
     });
   };
 
-  return { getOne, getAll };
+  const create = (req, res) => {
+    if (_userExists(req.body.email)) {
+      res.status(409);
+      res.send('[HTTP_409_CONFLICT]');
+      return res;
+    }
+
+    User.create(req.body, (err, user) => {
+      if (err) {
+        res.status(500);
+        res.send('[HTTP_500_INTERNAL_SERVER_ERROR]');
+        return err;
+      }
+
+      res.status(201);
+      res.json(user);
+
+      return;
+    });
+  };
+
+  const _userExists = (email) => {
+    return User.find({ email }, function (err, user) {
+      if (user) {
+        return true;
+      };
+
+      return false;
+    });
+  }
+
+  return { getOne, getAll, create };
 };
 
 module.exports = usersController;
