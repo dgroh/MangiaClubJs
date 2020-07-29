@@ -34,19 +34,21 @@ describe('userRouter', function () {
     sinon.stub(User, 'find');
     sinon.stub(User, 'findOne');
     sinon.stub(User, 'create');
+    sinon.stub(User, 'findByIdAndDelete');
   });
 
   afterEach(() => {
     User.find.restore();
     User.findOne.restore();
     User.create.restore();
+    User.findByIdAndDelete.restore();
   });
 
   after((done) => {
     app.server.close(done);
   });
 
-  describe('Get /', () => {
+  describe('GET /', () => {
     describe('/v1/api/users', () => {
       it('responds with 200', function (done) {
         const expectedUsers = users();
@@ -67,10 +69,7 @@ describe('userRouter', function () {
           .get(`/v1/api/users/`)
           .set('Accept', 'text/plain')
           .expect('Content-Type', /text/)
-          .expect(500, '[HTTP_500_INTERNAL_SERVER_ERROR]')
-          .end(function (err, res) {
-            done(err);
-          });
+          .expect(500, '[HTTP_500_INTERNAL_SERVER_ERROR]', done);
       });
     });
 
@@ -94,15 +93,12 @@ describe('userRouter', function () {
           .get(`/v1/api/users/-1`)
           .set('Accept', 'text/plain')
           .expect('Content-Type', /text/)
-          .expect(404, '[HTTP_404_NOT_FOUND]')
-          .end(function (err, res) {
-            done(err);
-          });
+          .expect(404, '[HTTP_404_NOT_FOUND]', done);
       });
     });
   })
 
-  describe('Post /', () => {
+  describe('POST /', () => {
     describe('/v1/api/users', () => {
       it('responds with 200', function (done) {
         // Arrange
@@ -151,6 +147,30 @@ describe('userRouter', function () {
           .set('Accept', 'text/plain')
           .expect('Content-Type', /text/)
           .expect(409, '[HTTP_409_CONFLICT]', done);
+      });
+    });
+  })
+
+  describe('DELETE /', () => {
+    describe('/v1/api/users/:id', () => {
+      it('responds with 204 when user is deleted', function (done) {
+        const userToDelete = users()[0];
+
+        User.findByIdAndDelete.yields(null, userToDelete);
+
+        request(app)
+          .delete(`/v1/api/users/${userToDelete._id}`)
+          .expect(204, done);
+      });
+
+      it('responds with 404 when user to be deleted does not exist', function (done) {
+        User.findByIdAndDelete.yields({}, null);
+
+        request(app)
+          .delete(`/v1/api/users/-1`)
+          .set('Accept', 'text/plain')
+          .expect('Content-Type', /text/)
+          .expect(404, '[HTTP_404_NOT_FOUND]', done);
       });
     });
   })

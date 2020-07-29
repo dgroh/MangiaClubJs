@@ -60,7 +60,22 @@ const usersController = (User) => {
     });
   }
 
-  return { getOne, getAll, create };
+  const deleteUser = (req, res) => {
+    User.findByIdAndDelete(req.params.id, (err, user) => {
+      if (err) {
+        res.status(404);
+        res.send('[HTTP_404_NOT_FOUND]');
+        return err;
+      }
+
+      res.status(204);
+      res.send('[HTTP_204_NO_CONTENT]');
+
+      return;
+    });
+  };
+
+  return { getOne, getAll, create, 'delete': deleteUser };
 };
 
 module.exports = usersController;

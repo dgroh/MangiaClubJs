@@ -38,12 +38,14 @@ describe('usersController', () => {
     sinon.stub(User, 'findById');
     sinon.stub(User, 'find');
     sinon.stub(User, 'create');
+    sinon.stub(User, 'findByIdAndDelete');
   });
 
   afterEach(() => {
     User.findById.restore();
     User.find.restore();
     User.create.restore();
+    User.findByIdAndDelete.restore();
   });
 
   describe('getOne', () => {
@@ -182,6 +184,47 @@ describe('usersController', () => {
       User.find.calledWith({ email: req.body.email });
       res.status.calledWith(409).should.true();
       User.create.notCalled.should.true();
+    });
+  });
+
+  describe('delete', () => {
+    it('deletes a user', () => {
+      // Arrange
+      const userToDelete = users()[0];
+      const req = { params: { id: userToDelete._id } };
+      const res = { status: sinon.spy(), json: sinon.spy(), send: sinon.spy() };
+
+      User.findByIdAndDelete.yields(null, userToDelete);
+
+      const controller = usersController(User);
+
+      // Act
+      controller.delete(req, res);
+
+      // Assert
+      User.findByIdAndDelete.calledWith(req.params.id);
+      res.send.calledWith('[HTTP_204_NO_CONTENT]');
+      res.status.calledWith(204).should.true();
+      res.json.notCalled.should.be.true();
+    });
+
+    it('returns 404 when user to be deleted does not exist', () => {
+      // Arrange
+      const req = { params: { id: nonExistingUserId } };
+      const res = { status: sinon.spy(), json: sinon.spy(), send: sinon.spy() };
+
+      User.findByIdAndDelete.yields({}, null);
+
+      const controller = usersController(User);
+
+      // Act
+      controller.delete(req, res);
+
+      // Assert
+      User.findByIdAndDelete.calledWith(req.params.id);
+      res.send.calledWith('[HTTP_404_NOT_FOUND]');
+      res.status.calledWith(404).should.true();
+      res.json.notCalled.should.be.true();
     });
   });
 });

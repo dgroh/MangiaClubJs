@@ -11,7 +11,8 @@ const routes = (User) => {
     .post(controller.create);
 
   userRouter.route('/users/:id')
-    .get(controller.getOne);
+    .get(controller.getOne)
+    .delete(controller.delete);
 
   return userRouter;
 };
